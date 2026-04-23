@@ -1,25 +1,33 @@
-$accessFile = "C:\Users\dchisholm\input\app.accdb"
-$outputFile = "C:\Users\dchisholm\output\schema.sql"
+$accessFile = "C:\Users\dchisholm\modernise\input\app.accdb"
+$outputFile = "C:\Users\dchisholm\modernise\output\schema.sql"
 
+# Start Access (only for COM context)
 $access = New-Object -ComObject Access.Application
 $access.OpenCurrentDatabase($accessFile)
 
-$catalog = $access.CurrentDb.TableDefs
+Start-Sleep -Seconds 2
+
+# 🔥 REAL DAO ENGINE (this is the fix)
+$dao = New-Object -ComObject DAO.DBEngine.120
+$db = $dao.OpenDatabase($accessFile)
 
 $output = ""
 
-foreach ($table in $catalog) {
-    if ($table.Attributes -eq 0) {
-        $output += "TABLE: " + $table.Name + "`n"
+foreach ($table in $db.TableDefs) {
 
-        foreach ($field in $table.Fields) {
-            $output += "  " + $field.Name + " : " + $field.Type + "`n"
-        }
+    # skip system tables
+    if ($table.Name -like "MSys*") { continue }
 
-        $output += "`n"
+    $output += "TABLE: $($table.Name)`n"
+
+    foreach ($field in $table.Fields) {
+        $output += "  $($field.Name)`n"
     }
+
+    $output += "`n"
 }
 
-Set-Content -Path $outputFile -Value $output
+# Force write
+[System.IO.File]::WriteAllText($outputFile, $output)
 
 $access.Quit()
