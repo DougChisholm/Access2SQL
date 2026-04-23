@@ -1,0 +1,107 @@
+@page "{id:int}"
+@model WebApp.Pages.Customers.EditModel
+@{
+    ViewData["Title"] = "Edytuj klienta";
+}
+
+<h1>Edytuj klienta</h1>
+<a asp-page="Index" class="btn btn-secondary mb-3">Powrót</a>
+
+<form method="post">
+    <input type="hidden" asp-for="Klient.IdKlienta" />
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="mb-3">
+        <label class="form-label">Imię</label>
+        <input asp-for="Klient.Imie" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Nazwisko</label>
+        <input asp-for="Klient.Nazwisko" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Data urodzenia</label>
+        <input asp-for="Klient.DataUrodzenia" type="date" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Płeć</label>
+        <select asp-for="Klient.Plec" class="form-select">
+            <option value="M">M - Mężczyzna</option>
+            <option value="K">K - Kobieta</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">PESEL</label>
+        <input asp-for="Klient.Pesel" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-warning">Zapisz zmiany</button>
+</form>
+
+<hr />
+<h3>Adresy</h3>
+<table class="table table-sm">
+    <thead><tr><th>Kraj</th><th>Miasto</th><th>Kod</th><th>Ulica</th><th>Nr</th><th></th></tr></thead>
+    <tbody>
+        @foreach (var a in Model.Adresy)
+        {
+            <tr>
+                <td>@a.Kraj</td><td>@a.Miasto</td><td>@a.KodPocztowy</td><td>@a.Ulica</td><td>@a.NrDomu</td>
+                <td>
+                    <form method="post" asp-page-handler="DeleteAddress" style="display:inline">
+                        <input type="hidden" name="adresId" value="@a.IdAdresu" />
+                        <button type="submit" class="btn btn-sm btn-danger">Usuń</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h5>Dodaj adres</h5>
+<form method="post" asp-page-handler="AddAddress">
+    <input type="hidden" name="NewAdres.IdKlienta" value="@Model.Klient.IdKlienta" />
+    <div class="row g-2">
+        <div class="col-md-2"><input name="NewAdres.Kraj" class="form-control" placeholder="Kraj" /></div>
+        <div class="col-md-2"><input name="NewAdres.Miasto" class="form-control" placeholder="Miasto" /></div>
+        <div class="col-md-2"><input name="NewAdres.KodPocztowy" class="form-control" placeholder="Kod pocztowy" /></div>
+        <div class="col-md-3"><input name="NewAdres.Ulica" class="form-control" placeholder="Ulica" /></div>
+        <div class="col-md-1"><input name="NewAdres.NrDomu" class="form-control" placeholder="Nr" /></div>
+        <div class="col-md-2"><button type="submit" class="btn btn-success">Dodaj</button></div>
+    </div>
+</form>
+
+<hr />
+<h3>Koszyk</h3>
+<table class="table table-sm">
+    <thead><tr><th>Produkt</th><th>Cena</th><th></th></tr></thead>
+    <tbody>
+        @foreach (var ki in Model.KoszykItems)
+        {
+            <tr>
+                <td>@ki.Produkt?.Nazwa</td>
+                <td>@ki.Produkt?.Cena.ToString("C")</td>
+                <td>
+                    <form method="post" asp-page-handler="RemoveFromCart" style="display:inline">
+                        <input type="hidden" name="produktId" value="@ki.IdProduktu" />
+                        <button type="submit" class="btn btn-sm btn-danger">Usuń</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<form method="post" asp-page-handler="AddToCart" class="d-flex gap-2">
+    <select name="produktId" class="form-select">
+        @foreach (var p in Model.AllProducts)
+        {
+            <option value="@p.IdProduktu">@p.Nazwa (@p.Cena.ToString("C"))</option>
+        }
+    </select>
+    <button type="submit" class="btn btn-primary">Dodaj do koszyka</button>
+</form>
+<form method="post" asp-page-handler="ClearCart" class="mt-2">
+    <button type="submit" class="btn btn-warning">Wyczyść koszyk</button>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

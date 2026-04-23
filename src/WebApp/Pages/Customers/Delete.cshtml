@@ -1,0 +1,16 @@
+@page "{id:int}"
+@model WebApp.Pages.Customers.DeleteModel
+@{
+    ViewData["Title"] = "Usuń klienta";
+}
+
+<h1>Usuń klienta</h1>
+<div class="alert alert-danger">
+    <p>Czy na pewno chcesz usunąć klienta <strong>@Model.Klient.Imie @Model.Klient.Nazwisko</strong>?</p>
+    <p>Spowoduje to usunięcie wszystkich powiązanych adresów, koszyków i zamówień.</p>
+</div>
+
+<form method="post">
+    <button type="submit" class="btn btn-danger">Tak, usuń</button>
+    <a asp-page="Index" class="btn btn-secondary">Anuluj</a>
+</form>

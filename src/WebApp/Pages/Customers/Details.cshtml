@@ -1,0 +1,55 @@
+@page "{id:int}"
+@model WebApp.Pages.Customers.DetailsModel
+@{
+    ViewData["Title"] = "Szczegóły klienta";
+}
+
+<h1>Szczegóły klienta</h1>
+<a asp-page="Index" class="btn btn-secondary mb-3">Powrót</a>
+<a asp-page="Edit" asp-route-id="@Model.Klient.IdKlienta" class="btn btn-warning mb-3">Edytuj</a>
+
+<dl class="row">
+    <dt class="col-sm-3">Imię</dt><dd class="col-sm-9">@Model.Klient.Imie</dd>
+    <dt class="col-sm-3">Nazwisko</dt><dd class="col-sm-9">@Model.Klient.Nazwisko</dd>
+    <dt class="col-sm-3">Data urodzenia</dt><dd class="col-sm-9">@Model.Klient.DataUrodzenia.ToString("dd.MM.yyyy")</dd>
+    <dt class="col-sm-3">Płeć</dt><dd class="col-sm-9">@Model.Klient.Plec</dd>
+    <dt class="col-sm-3">PESEL</dt><dd class="col-sm-9">@Model.Klient.Pesel</dd>
+</dl>
+
+<hr />
+<h3>Adresy</h3>
+<table class="table table-sm">
+    <thead><tr><th>Kraj</th><th>Miasto</th><th>Kod</th><th>Ulica</th><th>Nr</th></tr></thead>
+    <tbody>
+        @foreach (var a in Model.Klient.Adresy)
+        {
+            <tr>
+                <td>@a.Kraj</td><td>@a.Miasto</td><td>@a.KodPocztowy</td><td>@a.Ulica</td><td>@a.NrDomu</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<hr />
+<h3>Koszyk</h3>
+<table class="table table-sm">
+    <thead><tr><th>Produkt</th><th>Cena</th></tr></thead>
+    <tbody>
+        @foreach (var ki in Model.Klient.Koszyk)
+        {
+            <tr><td>@ki.Produkt?.Nazwa</td><td>@ki.Produkt?.Cena.ToString("C")</td></tr>
+        }
+    </tbody>
+</table>
+
+<hr />
+<h3>Zamówienia</h3>
+<table class="table table-sm">
+    <thead><tr><th>ID</th><th>Data</th><th>Cena</th><th>Kod promocyjny</th></tr></thead>
+    <tbody>
+        @foreach (var z in Model.Klient.Zamowienia)
+        {
+            <tr><td>@z.IdZamowienia</td><td>@z.Data.ToString("dd.MM.yyyy")</td><td>@z.Cena.ToString("C")</td><td>@z.KodPromocyjny</td></tr>
+        }
+    </tbody>
+</table>

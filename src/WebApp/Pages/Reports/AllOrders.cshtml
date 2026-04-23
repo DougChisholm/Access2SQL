@@ -1,0 +1,24 @@
+@page
+@model WebApp.Pages.Reports.AllOrdersModel
+@{
+    ViewData["Title"] = "Wszystkie zamówienia";
+}
+
+<h1>Wszystkie zamówienia</h1>
+<a asp-page="Index" class="btn btn-secondary mb-3">Powrót</a>
+
+<table class="table table-striped">
+    <thead><tr><th>ID</th><th>Klient</th><th>Data</th><th>Cena</th><th>Kod prom.</th></tr></thead>
+    <tbody>
+        @foreach (var z in Model.Orders)
+        {
+            <tr>
+                <td>@z.IdZamowienia</td>
+                <td>@z.Klient?.Imie @z.Klient?.Nazwisko</td>
+                <td>@z.Data.ToString("dd.MM.yyyy")</td>
+                <td>@z.Cena.ToString("C")</td>
+                <td>@z.KodPromocyjny</td>
+            </tr>
+        }
+    </tbody>
+</table>

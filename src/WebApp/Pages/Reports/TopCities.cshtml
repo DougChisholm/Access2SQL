@@ -1,0 +1,21 @@
+@page
+@model WebApp.Pages.Reports.TopCitiesModel
+@{
+    ViewData["Title"] = "Miasta z zamówieniami";
+}
+
+<h1>Miasta z największą liczbą zamówień</h1>
+<a asp-page="Index" class="btn btn-secondary mb-3">Powrót</a>
+
+<table class="table table-striped">
+    <thead><tr><th>Miasto</th><th>Liczba zamówień</th></tr></thead>
+    <tbody>
+        @foreach (var item in Model.Data)
+        {
+            <tr>
+                <td>@item.Miasto</td>
+                <td>@item.OrderCount</td>
+            </tr>
+        }
+    </tbody>
+</table>

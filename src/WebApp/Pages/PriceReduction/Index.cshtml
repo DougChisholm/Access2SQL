@@ -1,0 +1,39 @@
+@page
+@model WebApp.Pages.PriceReduction.IndexModel
+@{
+    ViewData["Title"] = "Obniżka cen";
+}
+
+<h1>Obniżka cen produktu</h1>
+
+<form method="post" asp-page-handler="Preview">
+    <div class="mb-3">
+        <label class="form-label">Produkt</label>
+        <select name="produktId" class="form-select" asp-items="Model.ProduktSelectList">
+            <option value="">-- wybierz produkt --</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Rabat (0-1, np. 0.10 = 10%)</label>
+        <input type="number" name="discount" step="0.01" min="0" max="1" value="@Model.Discount" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-secondary" asp-page-handler="Preview">Podgląd</button>
+    <button type="submit" class="btn btn-warning" asp-page-handler="Apply">Zastosuj</button>
+</form>
+
+@if (Model.SelectedProdukt != null)
+{
+    <div class="alert alert-info mt-3">
+        <strong>@Model.SelectedProdukt.Nazwa</strong><br />
+        Aktualna cena: @Model.SelectedProdukt.Cena.ToString("C")<br />
+        @if (Model.NewPrice.HasValue)
+        {
+            <span>Nowa cena po rabacie (@((Model.Discount * 100).ToString("F0"))%): <strong>@Model.NewPrice.Value.ToString("C")</strong></span>
+        }
+    </div>
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
