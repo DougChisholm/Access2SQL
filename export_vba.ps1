@@ -1,5 +1,5 @@
-$accessFile = "C:\Users\dchisholm\input\app.accdb"
-$outputDir = "C:\Users\dchisholm\output\vba"
+$accessFile = "C:\Users\dchisholm\modernise\input\app.accdb"
+$outputDir = "C:\Users\dchisholm\modernise\output\vba"
 
 New-Item -ItemType Directory -Force -Path $outputDir | Out-Null
 
