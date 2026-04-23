@@ -1,19 +1,33 @@
-$accessFile = "C:\Users\dchisholm\input\app.accdb"
-$outputDir = "C:\Users\dchisholm\output\forms"
+$accessFile = "C:\Users\dchisholm\modernise\input\app.accdb"
+$outputDir  = "C:\Users\dchisholm\modernise\output\forms"
 
 New-Item -ItemType Directory -Force -Path $outputDir | Out-Null
 
 $access = New-Object -ComObject Access.Application
+$access.Visible = $false
 $access.OpenCurrentDatabase($accessFile)
 
-$db = $access.CurrentDb
-$forms = $db.Containers("Forms")
+Start-Sleep -Seconds 3
 
-foreach ($doc in $forms.Documents) {
-    $name = $doc.Name
+foreach ($obj in $access.CurrentProject.AllForms) {
+
+    $name = $obj.Name.Trim()
     $path = Join-Path $outputDir ($name + ".txt")
 
-    $access.SaveAsText(3, $name, $path)  # 3 = acForm
+    try {
+        # 🔥 test export capability BEFORE writing
+     	$access.SaveAsText(2, $name, $path)
+        Write-Host "Exported: $name"
+    }
+    catch {
+        Write-Host "Skipped: $name (not real exportable form definition)"
+    }
 }
 
-$access.Quit()
+try { $access.Quit() } catch {}
+
+[System.Runtime.InteropServices.Marshal]::ReleaseComObject($access) | Out-Null
+[GC]::Collect()
+[GC]::WaitForPendingFinalizers()
+
+Write-Host "Done."
