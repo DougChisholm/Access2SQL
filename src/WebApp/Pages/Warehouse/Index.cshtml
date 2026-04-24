@@ -1,0 +1,34 @@
+@page
+@model WebApp.Pages.Warehouse.IndexModel
+@{
+    ViewData["Title"] = "Magazyn";
+}
+
+<h1>Stan Magazynu</h1>
+
+<form method="post" asp-page-handler="UpdateAvailability" class="mb-3">
+    <button type="submit" class="btn btn-info">Zaktualizuj dostępność wg stanu magazynu</button>
+</form>
+
+<table class="table table-striped">
+    <thead>
+        <tr><th>Produkt</th><th>Stan</th><th>Dostępny</th><th>Nowy stan</th><th></th></tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Items)
+        {
+            <tr>
+                <td>@item.Nazwa</td>
+                <td>@item.Ilosc</td>
+                <td>@(item.Dostepny ? "Tak" : "Nie")</td>
+                <td>
+                    <form method="post" asp-page-handler="SetQuantity" class="d-flex gap-1">
+                        <input type="hidden" name="produktId" value="@item.IdProduktu" />
+                        <input type="number" name="quantity" value="@item.Ilosc" min="0" class="form-control form-control-sm" style="width:80px" />
+                        <button type="submit" class="btn btn-sm btn-primary">Ustaw</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

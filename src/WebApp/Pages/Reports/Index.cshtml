@@ -1,0 +1,17 @@
+@page
+@model WebApp.Pages.Reports.IndexModel
+@{
+    ViewData["Title"] = "Raporty";
+}
+
+<h1>Raporty</h1>
+
+<div class="list-group">
+    <a asp-page="CustomersByGender" class="list-group-item list-group-item-action">Klienci wg płci</a>
+    <a asp-page="CustomersBySpend" class="list-group-item list-group-item-action">Klienci wg wydatków</a>
+    <a asp-page="TopCities" class="list-group-item list-group-item-action">Miasta z największą liczbą zamówień</a>
+    <a asp-page="TopProducts" class="list-group-item list-group-item-action">Najpopularniejsze produkty</a>
+    <a asp-page="LowStock" class="list-group-item list-group-item-action">Niski stan magazynowy</a>
+    <a asp-page="ExpensesByAge" class="list-group-item list-group-item-action">Wydatki wg grupy wiekowej</a>
+    <a asp-page="AllOrders" class="list-group-item list-group-item-action">Wszystkie zamówienia</a>
+</div>

@@ -1,0 +1,22 @@
+@page
+@model WebApp.Pages.Reports.CustomersBySpendModel
+@{
+    ViewData["Title"] = "Klienci wg wydatków";
+}
+
+<h1>Klienci wg wydatków</h1>
+<a asp-page="Index" class="btn btn-secondary mb-3">Powrót</a>
+
+<table class="table table-striped">
+    <thead><tr><th>Imię</th><th>Nazwisko</th><th>Łączne wydatki</th></tr></thead>
+    <tbody>
+        @foreach (var item in Model.Data)
+        {
+            <tr>
+                <td>@item.Imie</td>
+                <td>@item.Nazwisko</td>
+                <td>@item.TotalSpend.ToString("C")</td>
+            </tr>
+        }
+    </tbody>
+</table>
