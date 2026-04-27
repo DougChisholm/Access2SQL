@@ -1,48 +1,47 @@
-param(
-    [string]$AccessFile = "C:\Users\dchisholm\modernise\input\app.accdb",
-    [string]$OutputDir = "C:\Users\dchisholm\modernise\output\queries"
-)
+$accessFile = "C:\Users\dchisholm\modernise\input\app.accdb"
+$outputDir  = "C:\Users\dchisholm\modernise\output\queries-sql"
 
-# Ensure output directory exists
-New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
+New-Item -ItemType Directory -Force -Path $outputDir | Out-Null
 
-# Start Access COM
 $access = New-Object -ComObject Access.Application
 $access.Visible = $false
+$access.OpenCurrentDatabase($accessFile)
 
-try {
-    $access.OpenCurrentDatabase($AccessFile)
+Start-Sleep -Seconds 3
 
-    Write-Host "Exporting queries from: $AccessFile"
+$db = $access.CurrentDb()
 
-    foreach ($query in $access.CurrentDb().QueryDefs) {
+foreach ($query in $db.QueryDefs) {
 
-        $name = $query.Name
+    $name = $query.Name.Trim()
 
-        # Skip system / temp queries
-        if ($name.StartsWith("~") -or $name.StartsWith("MSys")) {
-            continue
-        }
+    # Skip system/temp queries
+    if ($name.StartsWith("~") -or $name.StartsWith("MSys")) {
+        continue
+    }
 
-        # Optional: sanitise filename
-        $safeName = $name -replace '[^a-zA-Z0-9_-]', '_'
-        $filePath = Join-Path $OutputDir ($safeName + ".txt")
+    # Skip queries with no SQL
+    if ([string]::IsNullOrWhiteSpace($query.SQL)) {
+        continue
+    }
 
-        try {
-            # 5 = acQuery
-            $access.SaveAsText(5, $name, $filePath)
-            Write-Host "Exported query: $name"
-        }
-        catch {
-            Write-Warning "Failed to export query: $name"
-        }
+    # Clean filename
+    $safeName = $name -replace '[^a-zA-Z0-9_-]', '_'
+    $path = Join-Path $outputDir ($safeName + ".sql")
+
+    try {
+        $query.SQL | Out-File -FilePath $path -Encoding UTF8
+        Write-Host "Exported SQL: $name"
+    }
+    catch {
+        Write-Host "Failed: $name"
     }
 }
-finally {
-    # Cleanup
-    $access.CloseCurrentDatabase()
-    $access.Quit()
-    [System.Runtime.Interopservices.Marshal]::ReleaseComObject($access) | Out-Null
-}
 
-Write-Host "Query export complete."
+try { $access.Quit() } catch {}
+
+[System.Runtime.InteropServices.Marshal]::ReleaseComObject($access) | Out-Null
+[GC]::Collect()
+[GC]::WaitForPendingFinalizers()
+
+Write-Host "Done."
