@@ -1,0 +1,5 @@
+bin/
+obj/
+bingo.db
+bingo.db-shm
+bingo.db-wal
