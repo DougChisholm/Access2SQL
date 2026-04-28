@@ -1,0 +1,56 @@
+{
+  "migration": {
+    "source": "Microsoft Access — SchoolTests.mdb",
+    "target": "ASP.NET Core 10 Razor Pages + EF Core + SQLite",
+    "date": "2025"
+  },
+  "forms": [
+    {
+      "accessForm": "ChooseTest",
+      "webPage": "/Pages/ChooseTest.cshtml",
+      "recordSource": "SELECT DISTINCTROW TestId, TestDescription FROM Test",
+      "controls": {
+        "lstTest": {
+          "type": "ListBox",
+          "webEquivalent": "radio-button list in .test-list",
+          "note": "OnClick enables cmdEnterResults button → replicated with JavaScript change event"
+        },
+        "cmdEnterResults": {
+          "type": "CommandButton",
+          "initiallyDisabled": true,
+          "webEquivalent": "#btnEnterResults submit button",
+          "onClick": "DoCmd.OpenForm 'StudentResult' → GET /EnterResults?testId={selected}"
+        }
+      },
+      "vbaTranslation": {
+        "lstTest_Click": "JavaScript: enables submit button when radio is checked",
+        "cmdEnterResults_Click": "Form GET action navigates to /EnterResults?testId={value}"
+      }
+    },
+    {
+      "accessForm": "StudentResult",
+      "webPage": "/Pages/EnterResults.cshtml",
+      "recordSource": "StudentInTest query",
+      "query_StudentInTest": "SELECT FilterResult.ResultId, FilterResult.StudentId, Student.StudentName, FilterResult.TestId, FilterResult.Mark FROM Student LEFT JOIN FilterResult ON Student.StudentId = FilterResult.StudentId ORDER BY StudentName",
+      "query_FilterResult": "SELECT ResultId, StudentId, TestId, Mark FROM StudentResult WHERE TestId = [forms]![ChooseTest]![lstTest]",
+      "efCoreEquivalent": "LINQ left join: from s in Students join r in StudentResults.Where(x => x.TestId == testId) on s.StudentId equals r.StudentId into results from r in results.DefaultIfEmpty()",
+      "controls": {
+        "ResultId": { "type": "TextBox", "locked": true, "webEquivalent": "hidden input" },
+        "StudentId": { "type": "TextBox", "locked": true, "webEquivalent": "hidden input" },
+        "StudentName": { "type": "TextBox", "locked": true, "webEquivalent": "readonly display cell" },
+        "TestId": { "type": "TextBox", "locked": true, "webEquivalent": "hidden input" },
+        "Mark": { "type": "TextBox", "editable": true, "webEquivalent": "number input [0-100]" }
+      },
+      "vbaTranslation": {
+        "Form_Current": "JavaScript: auto-focus first .mark-input on page load",
+        "Mark_BeforeUpdate": "Server POST handler sets TestId from bound [BindProperty] TestId — equivalent to reading Forms!ChooseTest!LstTest"
+      }
+    }
+  ],
+  "tables": {
+    "README":        { "efEntity": "AppInfo",       "pkColumn": "Item" },
+    "Student":       { "efEntity": "Student",       "pkColumn": "StudentId" },
+    "Test":          { "efEntity": "Test",           "pkColumn": "TestId" },
+    "StudentResult": { "efEntity": "StudentResult",  "pkColumn": "ResultId" }
+  }
+}
