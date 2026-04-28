@@ -99,9 +99,11 @@ Me.FieldName → Model.Property
 DoCmd.OpenForm → RedirectToPage / navigation
 STEP 4 — APPLICATION GENERATION
 
+Choose a short, descriptive folder name that reflects the purpose of the migrated app (e.g., "CinemaBooking", "InventoryManager"). Create this folder at the repository root and place the entire generated solution inside it.
+
 Generate a full solution with this structure:
 
-/src /WebApp (ASP.NET Core project) /Pages or /Views /Controllers (if MVC) /wwwroot /Domain Entity models /Infrastructure DbContext and configuration /Migrations
+/<DescriptiveFolderName> /src /WebApp (ASP.NET Core project) /Pages or /Views /Controllers (if MVC) /wwwroot /Domain Entity models /Infrastructure DbContext and configuration /Migrations
 
 STEP 5 — PAGE GENERATION
 
@@ -119,6 +121,20 @@ Validation logic
 Bind form fields to EF Core models
 
 Ensure basic usability (labels, inputs, validation messages)
+
+DESIGN REQUIREMENTS
+
+Apply a modern web app design inspired by GitHub.com styling:
+
+Use a clean, minimal layout with a dark top navigation bar
+Apply a neutral colour palette (white/light-grey backgrounds, dark text, blue accent for actions)
+Style buttons using a pill or rounded-rectangle shape with clear primary/secondary distinction
+Use a responsive grid or flexbox layout
+Apply consistent spacing, padding, and typography (e.g., system font stack similar to GitHub)
+Include subtle borders and shadows on cards and form containers
+Ensure the UI is fully responsive and mobile-friendly
+Add a site-wide navigation header with the app name and key page links
+Use form validation styles (red borders/messages for errors, green for success) consistent with GitHub conventions
 
 STEP 6 — AUTHENTICATION
 
@@ -244,6 +260,19 @@ TextBox → input field
 ComboBox → dropdown
 Button → POST action
 RecordSource → EF Core query source
+DESIGN REQUIREMENTS
+
+Apply a modern web app design inspired by GitHub.com styling:
+
+Use a clean, minimal layout with a dark top navigation bar
+Apply a neutral colour palette (white/light-grey backgrounds, dark text, blue accent for actions)
+Style buttons using a pill or rounded-rectangle shape with clear primary/secondary distinction
+Use a responsive grid or flexbox layout
+Apply consistent spacing, padding, and typography (e.g., system font stack similar to GitHub)
+Include subtle borders and shadows on cards and form containers
+Ensure the UI is fully responsive and mobile-friendly
+Add a site-wide navigation header with the app name and key page links
+Use form validation styles (red borders/messages for errors, green for success) consistent with GitHub conventions
 PHASE 4 — VBA TRANSLATION
 
 For each VBA event:
@@ -269,9 +298,11 @@ Create default user authentication system
 Map any Access “User” tables only as reference data if needed
 PHASE 6 — OUTPUT STRUCTURE
 
+Choose a short, descriptive folder name that reflects the purpose of the migrated app (e.g., "CinemaBooking", "InventoryManager"). Create this folder at the repository root and place the entire generated solution inside it.
+
 Generate a clean solution:
 
-/src /WebApp (ASP.NET Core project) /Domain (EF Core models) /Infrastructure (DbContext, SQLite) /Migrations /LegacyMapping (optional JSON representation of Access forms + VBA interpretation)
+/<DescriptiveFolderName> /src /WebApp (ASP.NET Core project) /Domain (EF Core models) /Infrastructure (DbContext, SQLite) /Migrations /LegacyMapping (optional JSON representation of Access forms + VBA interpretation)
 
 PHASE 7 — RUNNABILITY
 
