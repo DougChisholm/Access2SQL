@@ -1,0 +1,83 @@
+@page
+@model SchoolTests.Web.Pages.Students.IndexModel
+@{
+    ViewData["Title"] = "Students";
+}
+
+<div class="page-wrapper">
+    <div class="breadcrumb">
+        <a asp-page="/Index">Home</a>
+        <span class="breadcrumb-sep">›</span>
+        <span>Students</span>
+    </div>
+
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">🎓 Students</h1>
+            <p class="page-subtitle">@Model.Students.Count student@(Model.Students.Count == 1 ? "" : "s") enrolled</p>
+        </div>
+        <a asp-page="Create" class="btn btn-primary">➕ Add Student</a>
+    </div>
+
+    @if (TempData["SuccessMessage"] is string msg)
+    {
+        <div class="alert alert-success">✅ @msg</div>
+    }
+
+    @if (!Model.Students.Any())
+    {
+        <div class="card">
+            <div class="empty-state">
+                <div class="empty-state-icon">🎓</div>
+                <p class="empty-state-title">No students yet</p>
+                <p class="empty-state-desc">Add students to start recording test results.</p>
+                <a asp-page="Create" class="btn btn-primary">Add Student</a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Tests Taken</th>
+                        <th>Avg Mark</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var s in Model.Students)
+                    {
+                        var results = s.StudentResults.Where(r => r.Mark.HasValue).ToList();
+                        var avg = results.Any() ? results.Average(r => (double)r.Mark!) : (double?)null;
+                        var markClass = avg.HasValue ? (avg >= 75 ? "mark-high" : avg >= 50 ? "mark-mid" : "mark-low") : "mark-none";
+                        <tr>
+                            <td class="text-muted">@s.StudentId</td>
+                            <td><strong>@s.StudentName</strong></td>
+                            <td><span class="badge badge-blue">@results.Count</span></td>
+                            <td>
+                                @if (avg.HasValue)
+                                {
+                                    <span class="mark-badge @markClass">@($"{avg:F1}")</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">—</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="td-actions">
+                                    <a asp-page="Edit" asp-route-id="@s.StudentId" class="btn btn-sm btn-secondary">Edit</a>
+                                    <a asp-page="Delete" asp-route-id="@s.StudentId" class="btn btn-sm btn-outline-danger">Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

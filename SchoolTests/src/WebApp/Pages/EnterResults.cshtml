@@ -1,0 +1,126 @@
+@page
+@model EnterResultsModel
+@{
+    ViewData["Title"] = $"Enter Results — {Model.TestDescription}";
+}
+
+<div class="page-wrapper">
+    <div class="breadcrumb">
+        <a asp-page="/Index">Home</a>
+        <span class="breadcrumb-sep">›</span>
+        <a asp-page="/ChooseTest">Choose Test</a>
+        <span class="breadcrumb-sep">›</span>
+        <span>Enter Results</span>
+    </div>
+
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">📝 Enter Results</h1>
+            <p class="page-subtitle">
+                <span class="badge badge-blue">@Model.TestDescription</span>
+                &nbsp; Enter a mark (0–100) for each student. Leave blank if not yet assessed.
+            </p>
+        </div>
+        <a asp-page="/ChooseTest" class="btn btn-secondary">← Back to Tests</a>
+    </div>
+
+    @if (TempData["SuccessMessage"] is string msg)
+    {
+        <div class="alert alert-success">✅ @msg</div>
+    }
+
+    @if (!Model.Entries.Any())
+    {
+        <div class="card">
+            <div class="empty-state">
+                <div class="empty-state-icon">🎓</div>
+                <p class="empty-state-title">No students enrolled</p>
+                <p class="empty-state-desc">Add students first before entering results.</p>
+                <a asp-page="/Students/Create" class="btn btn-primary">Add a Student</a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <form method="post" class="results-form">
+            <input type="hidden" asp-for="TestId" />
+            @Html.AntiForgeryToken()
+
+            <div class="card">
+                <div class="card-header" style="justify-content:space-between;">
+                    <span class="card-title">Student Results</span>
+                    <span class="badge badge-grey">@Model.Entries.Count student@(Model.Entries.Count == 1 ? "" : "s")</span>
+                </div>
+
+                <div class="table-container" style="border:none;border-radius:0;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Student</th>
+                                <th>Current Mark</th>
+                                <th>Enter Mark (0–100)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.Entries.Count; i++)
+                            {
+                                var entry = Model.Entries[i];
+                                <tr>
+                                    <td class="text-muted">@(i + 1)</td>
+                                    <td>
+                                        <strong>@entry.StudentName</strong>
+                                        <input type="hidden" asp-for="Entries[i].ResultId" />
+                                        <input type="hidden" asp-for="Entries[i].StudentId" />
+                                        <input type="hidden" asp-for="Entries[i].StudentName" />
+                                    </td>
+                                    <td>
+                                        @if (entry.Mark.HasValue)
+                                        {
+                                            var css = entry.Mark >= 75 ? "mark-high" : entry.Mark >= 50 ? "mark-mid" : "mark-low";
+                                            <span class="mark-badge @css">@entry.Mark</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="mark-badge mark-none">Not set</span>
+                                        }
+                                    </td>
+                                    <td class="mark-cell">
+                                        <input asp-for="Entries[i].Mark"
+                                               type="number"
+                                               min="0" max="100"
+                                               class="form-control mark-input"
+                                               placeholder="—"
+                                               autocomplete="off" />
+                                        <span asp-validation-for="Entries[i].Mark" class="field-validation-error"></span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card-footer" style="justify-content:space-between;align-items:center;">
+                    <span class="text-muted" style="font-size:13px;">
+                        💡 Tab through fields to fill marks quickly. Empty = not assessed.
+                    </span>
+                    <div style="display:flex;gap:8px;">
+                        <a asp-page="/ChooseTest" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-success btn-lg">💾 Save All Marks</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    }
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+    // Auto-focus first mark input (mimics Form_Current → Mark.SetFocus)
+    document.addEventListener('DOMContentLoaded', function () {
+        var first = document.querySelector('.mark-input');
+        if (first) first.focus();
+    });
+    </script>
+}

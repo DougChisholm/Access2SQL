@@ -1,0 +1,103 @@
+@page
+@model ChooseTestModel
+@{
+    ViewData["Title"] = "Choose a Test";
+}
+
+<div class="page-wrapper">
+    <div class="breadcrumb">
+        <a asp-page="/Index">Home</a>
+        <span class="breadcrumb-sep">›</span>
+        <span>Choose Test</span>
+    </div>
+
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">📋 Choose a Test</h1>
+            <p class="page-subtitle">Select a test from the list below, then click "Enter Results" to record student marks.</p>
+        </div>
+        <a asp-page="/Tests/Create" class="btn btn-secondary">
+            ➕ New Test
+        </a>
+    </div>
+
+    @if (!Model.Tests.Any())
+    {
+        <div class="card">
+            <div class="empty-state">
+                <div class="empty-state-icon">📝</div>
+                <p class="empty-state-title">No tests available</p>
+                <p class="empty-state-desc">Create a test first before entering student results.</p>
+                <a asp-page="/Tests/Create" class="btn btn-primary">Create a Test</a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card" style="max-width:680px;">
+            <div class="card-header">
+                <span class="card-title">Available Tests</span>
+                <span class="badge badge-grey">@Model.Tests.Count test@(Model.Tests.Count == 1 ? "" : "s")</span>
+            </div>
+
+            <form method="get" action="/EnterResults" id="chooseTestForm">
+                <div class="test-list" id="testList">
+                    @foreach (var test in Model.Tests)
+                    {
+                        <label class="test-list-item" for="test_@test.TestId">
+                            <input type="radio"
+                                   name="testId"
+                                   value="@test.TestId"
+                                   id="test_@test.TestId"
+                                   class="test-radio"
+                                   required />
+                            <span class="test-label">@test.TestDescription</span>
+                            <span class="badge badge-blue">@test.StudentResults.Count result@(test.StudentResults.Count == 1 ? "" : "s")</span>
+                        </label>
+                    }
+                </div>
+
+                <div class="card-footer" style="justify-content:space-between;align-items:center;">
+                    <span class="text-muted" id="selectionHint" style="font-size:13px;">
+                        Select a test to enable the button
+                    </span>
+                    <button type="submit"
+                            class="btn btn-primary btn-lg"
+                            id="btnEnterResults"
+                            disabled>
+                        Enter Results →
+                    </button>
+                </div>
+            </form>
+        </div>
+    }
+</div>
+
+@section Scripts {
+<script>
+(function () {
+    var radios = document.querySelectorAll('.test-radio');
+    var btn    = document.getElementById('btnEnterResults');
+    var hint   = document.getElementById('selectionHint');
+
+    function updateButton() {
+        var checked = document.querySelector('.test-radio:checked');
+        if (btn) btn.disabled = !checked;
+        if (hint) hint.textContent = checked ? '✓ Test selected — click to continue' : 'Select a test to enable the button';
+    }
+
+    radios.forEach(function (r) {
+        r.addEventListener('change', function () {
+            // Highlight selected row
+            document.querySelectorAll('.test-list-item').forEach(function (li) {
+                li.classList.remove('selected');
+            });
+            if (this.checked) {
+                this.closest('.test-list-item').classList.add('selected');
+            }
+            updateButton();
+        });
+    });
+})();
+</script>
+}
