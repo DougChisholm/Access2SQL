@@ -14,12 +14,12 @@ You are a senior software engineer tasked with migrating a Microsoft Access appl
 
 You are provided with pre-extracted artifacts from an Access database.
 
-INPUT FILES (already available in the repository)
+INPUT FILES (already available in the repository) in the /input folder (perhaps in a subfolder in there)
 
-/input/schema.sql → database schema (tables, columns, relationships)
-/input/*.txt → Access forms exported using SaveAsText
-/input/*.bas → VBA modules exported from Access
-/input/*.sql → Queries exported from Access (except Schema.sql which is the db schema)
+schema.sql → database schema (tables, columns, relationships)
+*.txt → Access forms exported using SaveAsText
+*.bas → VBA modules exported from Access
+*.sql → Queries exported from Access (except Schema.sql which is the db schema)
 
 IMPORTANT CONSTRAINTS
 
