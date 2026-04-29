@@ -1,7 +1,24 @@
 param(
-    [string]$AccessFile = "C:\Users\dchisholm\modernise\input\app.accdb",
-    [string]$OutputDir = "C:\Users\dchisholm\modernise\output\reports"
+    [string]$AccessFile,
+    [string]$OutputDir
 )
+
+$RepoRoot = $PSScriptRoot
+$InputDir = Join-Path $RepoRoot "input"
+
+if (-not $AccessFile) {
+    $accdbFiles = Get-ChildItem -Path $InputDir -Filter "*.accdb" -ErrorAction SilentlyContinue
+    if ($accdbFiles.Count -eq 0) {
+        Write-Error "No .accdb file found in $InputDir. Run convert_mdb_accdb.ps1 first if you have an .mdb file."
+        exit 1
+    }
+    $AccessFile = $accdbFiles[0].FullName
+    Write-Host "Using Access file: $AccessFile"
+}
+
+if (-not $OutputDir) {
+    $OutputDir = Join-Path (Join-Path $RepoRoot "output") "reports"
+}
 
 # Ensure output directory exists
 New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null

@@ -1,7 +1,26 @@
 param(
-    [string]$SourceMdb = "C:\Users\dchisholm\modernise\input\app.mdb",
-    [string]$TargetAccdb = "C:\Users\dchisholm\modernise\input\app.accdb"
+    [string]$SourceMdb,
+    [string]$TargetAccdb
 )
+
+# Default: find first .mdb file in the repo input folder
+$RepoRoot = $PSScriptRoot
+$InputDir = Join-Path $RepoRoot "input"
+
+if (-not $SourceMdb) {
+    $mdbFiles = Get-ChildItem -Path $InputDir -Filter "*.mdb" -ErrorAction SilentlyContinue
+    if ($mdbFiles.Count -eq 0) {
+        Write-Error "No .mdb file found in $InputDir"
+        exit 1
+    }
+    $SourceMdb = $mdbFiles[0].FullName
+    Write-Host "Found MDB: $SourceMdb"
+}
+
+if (-not $TargetAccdb) {
+    $baseName = [System.IO.Path]::GetFileNameWithoutExtension($SourceMdb)
+    $TargetAccdb = Join-Path $InputDir ($baseName + ".accdb")
+}
 
 # Create Access COM object
 $access = New-Object -ComObject Access.Application
