@@ -12,21 +12,44 @@ description: Modernise Access DB to SQL app
 
 You are a senior software engineer tasked with migrating a Microsoft Access application into a modern ASP.NET Core web application.
 
-You are provided with pre-extracted artifacts from an Access database.
+PHASE 0 — EXTRACT ARTIFACTS FROM THE ACCESS DATABASE
 
-INPUT FILES (already available in the repository) in the /input folder (perhaps in a subfolder in there)
+Before doing anything else, you must extract all objects from the Access database file in the /input folder by running the PowerShell extraction scripts at the repository root.
 
-schema.sql → database schema (tables, columns, relationships)
-*.txt → Access forms exported using SaveAsText
-*.bas → VBA modules exported from Access
-*.sql → Queries exported from Access (except Schema.sql which is the db schema)
+Step 0.1 — Detect the input file type
+
+Check the /input folder for database files:
+- If the file has a .mdb extension, run convert_mdb_accdb.ps1 first to convert it to .accdb:
+  powershell -ExecutionPolicy Bypass -File convert_mdb_accdb.ps1
+- If the file already has a .accdb extension, skip the conversion step.
+
+Step 0.2 — Run all extraction scripts (or run_all.ps1 which does all of the above automatically)
+
+Run the following PowerShell scripts from the repository root to extract all Access objects into the /output folder:
+
+  powershell -ExecutionPolicy Bypass -File run_all.ps1
+
+This script will:
+1. Detect .mdb vs .accdb in /input and convert if needed
+2. Export the database schema to /output/schema.sql
+3. Export all forms to /output/forms/*.txt
+4. Export all reports to /output/reports/*.txt
+5. Export all VBA modules to /output/vba/*.bas
+6. Export all queries to /output/queries-sql/*.sql
+
+Step 0.3 — Use the extracted artifacts as input
+
+After extraction, the INPUT FILES are in /output (not /input):
+- /output/schema.sql → database schema (tables, columns, relationships)
+- /output/forms/*.txt → Access forms exported using SaveAsText
+- /output/reports/*.txt → Access reports
+- /output/vba/*.bas → VBA modules
+- /output/queries-sql/*.sql → Queries exported from Access
+
+If extraction scripts cannot run (e.g., no Windows/COM available), fall back to any pre-existing files already in /input.
 
 IMPORTANT CONSTRAINTS
 
-Do NOT attempt to access Microsoft Access
-Do NOT use COM automation
-Do NOT attempt to re-extract anything
-Work ONLY from the provided files
 Prefer a working, maintainable web app over exact Access replication
 Infer intent where necessary
 OBJECTIVE
@@ -150,14 +173,42 @@ STEP 7 — DATABASE CONFIGURATION
 Use SQLite as the database
 Store DB file locally in the project
 Ensure migrations can be applied automatically
-STEP 8 — RUNNABILITY
+STEP 8 — BUILD, RUN, AND PUBLISH THE APP URL
 
-Ensure the project:
+After generating the application:
 
-Builds with dotnet build
-Runs with dotnet run
-Automatically initializes the database
-Has working navigation between pages
+1. Build the project:
+   cd <DescriptiveFolderName>/src/WebApp
+   dotnet build
+
+2. Start the application in the background:
+   dotnet run --urls "http://0.0.0.0:5000" &
+
+3. Determine the public URL and output it:
+   - If running inside a GitHub Codespace, the app will be forwarded automatically.
+     Use the GitHub CLI to retrieve the forwarded URL:
+       gh codespace ports --json label,browseUrl | ConvertFrom-Json | Where-Object { $_.label -eq "5000" } | Select-Object -ExpandProperty browseUrl
+     OR check the CODESPACE_NAME and GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN environment variables:
+       echo "https://${CODESPACE_NAME}-5000.${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}"
+   - If running locally (not in a Codespace), the URL is:
+       http://localhost:5000
+
+4. Output the URL clearly at the end of the task, for example:
+   "✅ App is running at: https://<codespace-name>-5000.app.github.dev"
+   OR
+   "✅ App is running at: http://localhost:5000"
+
+5. Generate a GitHub Actions workflow file at /<DescriptiveFolderName>/.github/workflows/deploy.yml that:
+   - Triggers on push to main
+   - Builds the app with dotnet build and dotnet publish
+   - Runs dotnet test if tests exist
+   - Deploys the published output to GitHub Pages using the static file publishing approach
+     (set ASPNETCORE_ENVIRONMENT=Production and use dotnet publish -c Release -o ./publish)
+   Note: Since ASP.NET Core is server-side, the GitHub Actions workflow should also consider
+   deploying to a free hosting service (e.g., Azure App Service free tier, or Railway.app)
+   by including deployment steps using the relevant GitHub Actions, with secrets referenced
+   from repository secrets (AZURE_WEBAPP_PUBLISH_PROFILE or similar).
+
 STEP 9 — QUALITY RULES
 
 Prefer clean architecture over exact replication
@@ -172,18 +223,16 @@ Database schema is represented correctly in EF Core
 Each Access form has a working web equivalent
 Core workflows (create, edit, save) function correctly
 Application runs locally without manual fixes
-Your task is to migrate a Microsoft Access .accdb application into a modern ASP.NET Core web application backed by SQLite.
+Your task is to migrate a Microsoft Access .accdb (or .mdb) application into a modern ASP.NET Core web application backed by SQLite.
 
 The repository contains:
 
-A Microsoft Access database file (.accdb)
-Any extracted artifacts (if present)
+A Microsoft Access database file (.accdb or .mdb) in the /input folder
+Any pre-extracted artifacts (if present) in /input or /output
 Your generated ASP.NET Core solution
-You must perform a structured migration in phases.
+You must perform a structured migration in phases, starting with Phase 0 (extraction).
 
 PHASE 1 — DISCOVER & EXTRACT
-
-If possible, inspect or assume extraction of the Access database structure using available tooling.
 
 You must derive:
 
@@ -304,14 +353,34 @@ Generate a clean solution:
 
 /<DescriptiveFolderName> /src /WebApp (ASP.NET Core project) /Domain (EF Core models) /Infrastructure (DbContext, SQLite) /Migrations /LegacyMapping (optional JSON representation of Access forms + VBA interpretation)
 
-PHASE 7 — RUNNABILITY
+PHASE 7 — BUILD, RUN, AND OUTPUT THE APP URL
 
-Ensure the final output:
+After generating the full application:
 
-Builds with dotnet build
-Runs locally with dotnet run
-Uses SQLite file in repository
-Does not require external services
+1. Build the app:
+     cd <DescriptiveFolderName>/src/WebApp
+     dotnet build
+
+2. Run the app (in the background):
+     dotnet run --urls "http://0.0.0.0:5000" &
+
+3. Determine and output the public URL:
+   - Inside a GitHub Codespace:
+       echo "https://${CODESPACE_NAME}-5000.${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}"
+   - Locally:
+       http://localhost:5000
+   Output the URL clearly so the user knows where to access the running app.
+
+4. Generate a GitHub Actions CI/CD workflow at /<DescriptiveFolderName>/.github/workflows/deploy.yml:
+   - Trigger: push to main
+   - Steps: dotnet restore → dotnet build → dotnet test (if tests exist) → dotnet publish -c Release
+   - Deploy the published output to a hosting target:
+     * For GitHub Pages (static-only): use Blazor WASM if a purely static export is needed,
+       OR host the static wwwroot files + note server is required.
+     * For full server-side hosting: include an Azure App Service deployment step using the
+       azure/webapps-deploy@v2 action with a repository secret AZURE_WEBAPP_PUBLISH_PROFILE,
+       and output the live Azure URL (e.g., https://<app-name>.azurewebsites.net).
+
 IMPORTANT RULES
 
 Do NOT attempt pixel-perfect UI replication of Access forms
