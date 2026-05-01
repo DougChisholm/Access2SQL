@@ -7,7 +7,7 @@ Steps to modernise an app:
 
 1. Fork this repo (then make private if uploading any PII)
 2. Download the ps1 script to a local windows machine that has MS Access installed
-3. Run the ps1 script to get all the database objects as text files.
+3. Run the ps1 script in terminal (in the same folder as the access db file) to get all the database objects as text files.
 4. Upload all those text files (of various file extensions) into the "input folder" in your repo
 5. Open the coding agents at top of the screen, select Access-Booster agent and ask it to "Modernise my access db"
 
