@@ -1,3 +1,6 @@
+# DEPRECATED: Use access2sql.ps1 instead, which exports reports (and all other
+# objects) without requiring "input" or "output" folders.
+
 param(
     [string]$AccessFile,
     [string]$OutputDir

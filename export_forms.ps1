@@ -1,3 +1,6 @@
+# DEPRECATED: Use access2sql.ps1 instead, which exports forms (and all other
+# objects) without requiring "input" or "output" folders.
+
 $RepoRoot = $PSScriptRoot
 $InputDir = Join-Path $RepoRoot "input"
 $OutputDir = Join-Path (Join-Path $RepoRoot "output") "forms"
