@@ -4,8 +4,8 @@
 # To make this agent available, merge this file into the default repository branch.
 # For format details, see: https://gh.io/customagents/config
 
-name: WebAppBooster
-description: create SQL / Webapp
+name: AccessBooster
+description: Createa a SQL WebApp from AccessDB files
 ---
 
 # My Agent
