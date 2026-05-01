@@ -1,3 +1,7 @@
+# DEPRECATED: This script is superseded by access2sql.ps1.
+# Run .\access2sql.ps1 instead – it performs the same end-to-end export without
+# requiring "input" or "output" folders.
+
 $RepoRoot = $PSScriptRoot
 $InputDir = Join-Path $RepoRoot "input"
 $OutputDir = Join-Path $RepoRoot "output"

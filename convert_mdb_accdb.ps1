@@ -1,3 +1,6 @@
+# DEPRECATED: MDB-to-ACCDB conversion is now handled automatically by access2sql.ps1
+# when no .accdb is present. Run .\access2sql.ps1 instead.
+
 param(
     [string]$SourceMdb,
     [string]$TargetAccdb
