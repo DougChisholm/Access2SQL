@@ -1,0 +1,11 @@
+name: Copilot setup steps
+ 
+on:
+  workflow_dispatch:
+ 
+jobs:
+  copilot-setup-steps:
+    runs-on: windows-latest
+    steps:
+      - name: Setup
+        run: echo "Copilot setup steps running on Windows"
