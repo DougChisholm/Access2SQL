@@ -12,7 +12,7 @@ Steps to modernise an app:
 5. Open the coding agents at top of the screen, select Access-Booster agent and ask it to "Modernise my access db"
 
 The agent will create a project with a SQL Lite DB than can be run in Codespaces or your local machine. If the POC has all the functionality
-matchign the legacy app then your Azure Account Team can help you migrate it to a PaaS solution.
+matching the legacy app then your Azure Account Team can help you migrate it to a PaaS solution.
 
 Supporting slides for Microsoft Employees:
 [Here](<https://microsofteur-my.sharepoint.com/:p:/g/personal/dchisholm_microsoft_com/IQAY41LQ12fjSIfFz3ha4hfFAZc7JQQuWaOrF7ObgxRK6f4?e=p6arJs>)
